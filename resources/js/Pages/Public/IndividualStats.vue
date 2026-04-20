@@ -79,15 +79,60 @@
                 <table class="stats-table">
                     <thead>
                         <tr>
-                            <th>Player</th>
-                            <th>Team</th>
-                            <th>Jersey #</th>
-                            <th>Position</th>
-                            <th>Games</th>
-                            <th>Points</th>
-                            <th>Assists</th>
-                            <th>Rebounds</th>
-                            <th>Best</th>
+                            <th>
+                                <span class="th-label th-label-full"
+                                    >Player</span
+                                >
+                                <span class="th-label th-label-short"
+                                    >Player</span
+                                >
+                            </th>
+                            <th>
+                                <span class="th-label th-label-full">Team</span>
+                                <span class="th-label th-label-short">TM</span>
+                            </th>
+                            <th>
+                                <span class="th-label th-label-full"
+                                    >Jersey #</span
+                                >
+                                <span class="th-label th-label-short">No</span>
+                            </th>
+                            <th>
+                                <span class="th-label th-label-full"
+                                    >Position</span
+                                >
+                                <span class="th-label th-label-short">POS</span>
+                            </th>
+                            <th>
+                                <span class="th-label th-label-full"
+                                    >Games</span
+                                >
+                                <span class="th-label th-label-short">G</span>
+                            </th>
+                            <th>
+                                <span class="th-label th-label-full"
+                                    >Points</span
+                                >
+                                <span class="th-label th-label-short">PTS</span>
+                            </th>
+                            <th>
+                                <span class="th-label th-label-full"
+                                    >Assists</span
+                                >
+                                <span class="th-label th-label-short">AST</span>
+                            </th>
+                            <th>
+                                <span class="th-label th-label-full"
+                                    >Rebounds</span
+                                >
+                                <span class="th-label th-label-short">REB</span>
+                            </th>
+                            <th>
+                                <span class="th-label th-label-full">Best</span>
+                                <span class="th-label th-label-short"
+                                    >BEST</span
+                                >
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -168,87 +213,6 @@
                         </template>
                     </tbody>
                 </table>
-            </div>
-
-            <div v-if="filteredPlayers.length > 0" class="stats-cards">
-                <div
-                    v-for="player in filteredPlayers"
-                    :key="`card-${player.id}`"
-                    class="stats-card"
-                >
-                    <div class="stats-card-header">
-                        <div class="player-info">
-                            <div class="player-avatar">
-                                <img
-                                    v-if="player.photo"
-                                    :src="resolvePlayerPhotoUrl(player.photo)"
-                                    :alt="player.name"
-                                    class="avatar-image"
-                                    loading="lazy"
-                                />
-                                <span v-else class="avatar-placeholder">
-                                    {{ player.name.charAt(0).toUpperCase() }}
-                                </span>
-                            </div>
-                            <span class="player-name">{{ player.name }}</span>
-                        </div>
-                        <Link
-                            :href="route('player-stats', player.id)"
-                            class="stats-link"
-                        >
-                            Statistics
-                        </Link>
-                    </div>
-
-                    <div class="stats-card-grid">
-                        <div class="stat-item">
-                            <span class="stat-label">Team</span>
-                            <span class="team-cell">{{ player.team }}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Jersey #</span>
-                            <span class="jersey-badge">{{
-                                player.jersey_number || "-"
-                            }}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Position</span>
-                            <span class="position-badge">{{
-                                player.position || "-"
-                            }}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Games</span>
-                            <span class="games-cell">{{
-                                player.games_played
-                            }}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Points</span>
-                            <span class="points-cell">{{
-                                player.total_points
-                            }}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Assists</span>
-                            <span class="assists-cell">{{
-                                player.total_assists
-                            }}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Rebounds</span>
-                            <span class="rebounds-cell">{{
-                                player.total_rebounds
-                            }}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Best</span>
-                            <span class="best-cell">{{
-                                player.highest_points
-                            }}</span>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div v-else class="empty-state">
@@ -373,10 +337,7 @@ const resolvePlayerPhotoUrl = (photoPath) => {
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 1.5rem;
-    background: var(--cv-surface-1);
-    border-radius: 0.75rem;
-    border: 1px solid var(--cv-border-1);
+    padding: 0;
 }
 
 .header-icon {
@@ -402,10 +363,7 @@ const resolvePlayerPhotoUrl = (photoPath) => {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
-    padding: 1rem;
-    background: var(--cv-surface-1);
-    border-radius: 0.75rem;
-    border: 1px solid var(--cv-border-1);
+    padding: 0;
 }
 
 .division-tab {
@@ -432,10 +390,7 @@ const resolvePlayerPhotoUrl = (photoPath) => {
 }
 
 .filters-bar {
-    padding: 1rem;
-    background: var(--cv-surface-1);
-    border-radius: 0.75rem;
-    border: 1px solid var(--cv-border-1);
+    padding: 0;
 }
 
 .filters-row {
@@ -510,6 +465,10 @@ const resolvePlayerPhotoUrl = (photoPath) => {
     letter-spacing: 0.05em;
 }
 
+.th-label-short {
+    display: none;
+}
+
 .stats-table tbody tr {
     border-top: 1px solid var(--cv-border-1);
     transition: background 0.3s ease;
@@ -538,6 +497,7 @@ const resolvePlayerPhotoUrl = (photoPath) => {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    min-width: 0;
 }
 
 .player-avatar {
@@ -584,51 +544,6 @@ const resolvePlayerPhotoUrl = (photoPath) => {
 
 .stats-link:hover {
     color: #4ade80;
-}
-
-.stats-cards {
-    display: none;
-    gap: 1rem;
-}
-
-.stats-card {
-    background: var(--cv-surface-1);
-    border-radius: 0.75rem;
-    border: 1px solid var(--cv-border-1);
-    padding: 1rem;
-}
-
-.stats-card-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.stats-card-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
-}
-
-.stat-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding: 0.75rem;
-    border-radius: 0.75rem;
-    background: var(--cv-surface-3);
-    border: 1px solid var(--cv-border-1);
-}
-
-.stat-item .stat-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--cv-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
 }
 
 .team-cell {
@@ -702,10 +617,78 @@ const resolvePlayerPhotoUrl = (photoPath) => {
     margin: 0;
 }
 
+@media (max-width: 768px) {
+    .stats-table th,
+    .stats-table td {
+        padding: 0.75rem;
+    }
+}
+
 @media (max-width: 640px) {
     .page-header {
-        padding: 1rem;
+        padding: 0;
         gap: 0.75rem;
+    }
+
+    .stats-table-wrapper {
+        overflow-x: hidden;
+    }
+
+    .stats-table {
+        min-width: 0;
+        table-layout: fixed;
+    }
+
+    .stats-table th,
+    .stats-table td {
+        padding: 0.42rem 0.2rem;
+        font-size: 0.58rem;
+        letter-spacing: 0.02em;
+        line-height: 1.2;
+    }
+
+    .th-label-full {
+        display: none;
+    }
+
+    .th-label-short {
+        display: inline;
+    }
+
+    .stats-table th:nth-child(1),
+    .stats-table td:nth-child(1) {
+        width: 31%;
+    }
+
+    .stats-table th:nth-child(2),
+    .stats-table td:nth-child(2) {
+        width: 11%;
+    }
+
+    .stats-table th:nth-child(3),
+    .stats-table td:nth-child(3) {
+        width: 7%;
+        text-align: center;
+    }
+
+    .stats-table th:nth-child(4),
+    .stats-table td:nth-child(4) {
+        width: 9%;
+        text-align: center;
+    }
+
+    .stats-table th:nth-child(5),
+    .stats-table td:nth-child(5),
+    .stats-table th:nth-child(6),
+    .stats-table td:nth-child(6),
+    .stats-table th:nth-child(7),
+    .stats-table td:nth-child(7),
+    .stats-table th:nth-child(8),
+    .stats-table td:nth-child(8),
+    .stats-table th:nth-child(9),
+    .stats-table td:nth-child(9) {
+        width: 8.4%;
+        text-align: center;
     }
 
     .header-icon svg {
@@ -718,7 +701,6 @@ const resolvePlayerPhotoUrl = (photoPath) => {
     }
 
     .division-tabs {
-        padding: 0.75rem;
         gap: 0.375rem;
     }
 
@@ -728,7 +710,7 @@ const resolvePlayerPhotoUrl = (photoPath) => {
     }
 
     .filters-bar {
-        padding: 0.75rem;
+        padding: 0;
     }
 
     .filters-row {
@@ -739,13 +721,59 @@ const resolvePlayerPhotoUrl = (photoPath) => {
         grid-template-columns: 1fr;
     }
 
-    .stats-card {
-        padding: 0.9rem;
+    .player-cell {
+        padding: 0.35rem 0.2rem;
     }
 
-    .stat-item {
-        padding: 0.65rem;
-        border-radius: 0.65rem;
+    .player-info {
+        gap: 0.3rem;
+        min-width: 0;
+    }
+
+    .player-avatar {
+        display: none;
+    }
+
+    .player-text {
+        gap: 0.1rem;
+        min-width: 0;
+    }
+
+    .player-name {
+        display: block;
+        font-size: 0.64rem;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .stats-link {
+        font-size: 0.56rem;
+    }
+
+    .team-cell {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 0.6rem;
+    }
+
+    .jersey-badge,
+    .position-badge {
+        min-width: 1.1rem;
+        padding: 0.12rem 0.2rem;
+        border-radius: 0.24rem;
+        font-size: 0.56rem;
+    }
+
+    .points-cell,
+    .assists-cell,
+    .rebounds-cell,
+    .best-cell,
+    .games-cell {
+        font-size: 0.6rem;
     }
 
     .empty-state {
@@ -753,13 +781,36 @@ const resolvePlayerPhotoUrl = (photoPath) => {
     }
 }
 
-@media (max-width: 768px) {
-    .stats-table-wrapper {
-        display: none;
+@media (max-width: 420px) {
+    .stats-table th,
+    .stats-table td {
+        padding: 0.3rem 0.16rem;
+        font-size: 0.54rem;
     }
 
-    .stats-cards {
-        display: grid;
+    .player-name {
+        font-size: 0.58rem;
+    }
+
+    .stats-link {
+        font-size: 0.52rem;
+    }
+
+    .team-cell {
+        font-size: 0.56rem;
+    }
+
+    .jersey-badge,
+    .position-badge {
+        font-size: 0.52rem;
+    }
+
+    .points-cell,
+    .assists-cell,
+    .rebounds-cell,
+    .best-cell,
+    .games-cell {
+        font-size: 0.56rem;
     }
 }
 </style>

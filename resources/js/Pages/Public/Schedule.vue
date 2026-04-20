@@ -16,171 +16,205 @@
                 <h1 class="page-title">Match Schedule</h1>
             </div>
 
-            <div v-if="matches.length > 0" class="matches-list">
-                <Link
-                    v-for="match in matches"
-                    :key="match.id"
-                    :href="route('match.details', match.id)"
-                    class="match-card"
+            <div v-if="groupedSections.length > 0" class="schedule-sections">
+                <section
+                    v-for="group in groupedSections"
+                    :key="group.key"
+                    class="schedule-section"
                 >
-                    <div class="match-content">
-                        <div class="teams-section">
-                            <div class="team">
-                                <div class="team-avatar">
-                                    <img
-                                        v-if="
-                                            resolveTeamLogoUrl(
-                                                match.team_a?.logo,
-                                            )
-                                        "
-                                        :src="
-                                            resolveTeamLogoUrl(
-                                                match.team_a?.logo,
-                                            )
-                                        "
-                                        :alt="
-                                            (match.team_a?.name || 'Team A') +
-                                            ' logo'
-                                        "
-                                        class="team-avatar-image"
-                                        loading="lazy"
-                                    />
-                                    <span v-else class="team-avatar-fallback">
-                                        {{
-                                            match.team_a?.name?.charAt(0) || "A"
-                                        }}
-                                    </span>
-                                </div>
-                                <div class="team-info">
-                                    <span class="team-name">{{
-                                        match.team_a?.name
-                                    }}</span>
-                                    <span
-                                        v-if="match.status === 'finished'"
-                                        class="team-score"
-                                        >{{ match.team_a_score }}</span
-                                    >
-                                </div>
-                            </div>
-
-                            <div class="vs-section">
-                                <span class="vs-badge">VS</span>
-                            </div>
-
-                            <div class="team team-right">
-                                <div class="team-avatar team-avatar-alt">
-                                    <img
-                                        v-if="
-                                            resolveTeamLogoUrl(
-                                                match.team_b?.logo,
-                                            )
-                                        "
-                                        :src="
-                                            resolveTeamLogoUrl(
-                                                match.team_b?.logo,
-                                            )
-                                        "
-                                        :alt="
-                                            (match.team_b?.name || 'Team B') +
-                                            ' logo'
-                                        "
-                                        class="team-avatar-image"
-                                        loading="lazy"
-                                    />
-                                    <span v-else class="team-avatar-fallback">
-                                        {{
-                                            match.team_b?.name?.charAt(0) || "B"
-                                        }}
-                                    </span>
-                                </div>
-                                <div class="team-info">
-                                    <span class="team-name">{{
-                                        match.team_b?.name
-                                    }}</span>
-                                    <span
-                                        v-if="match.status === 'finished'"
-                                        class="team-score"
-                                        >{{ match.team_b_score }}</span
-                                    >
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="match-details">
-                            <div class="detail-item">
-                                <svg
-                                    class="detail-icon"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                    ></path>
-                                </svg>
-                                {{ formatDate(match.match_date) }}
-                            </div>
-                            <div v-if="match.match_time" class="detail-item">
-                                <svg
-                                    class="detail-icon"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    ></path>
-                                </svg>
-                                {{ formatTime(match.match_time) }}
-                            </div>
-                            <div v-if="match.venue" class="detail-item">
-                                <svg
-                                    class="detail-icon"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                    ></path>
-                                </svg>
-                                {{ match.venue }}
-                            </div>
-                            <span
-                                :class="[
-                                    'status-badge',
-                                    'status-' + match.status,
-                                ]"
-                            >
-                                {{ match.status.toUpperCase() }}
-                            </span>
-                            <span class="view-details">
-                                View Details
-                                <svg
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M9 5l7 7-7 7"
-                                    ></path>
-                                </svg>
-                            </span>
-                        </div>
+                    <div class="section-header">
+                        <h2 class="section-title">{{ group.title }}</h2>
+                        <span class="section-count">{{
+                            group.matches.length
+                        }}</span>
                     </div>
-                </Link>
+
+                    <div class="matches-list">
+                        <Link
+                            v-for="match in group.matches"
+                            :key="match.id"
+                            :href="route('match.details', match.id)"
+                            class="match-card"
+                        >
+                            <div class="match-content">
+                                <div class="teams-section">
+                                    <div class="team">
+                                        <div class="team-avatar">
+                                            <img
+                                                v-if="
+                                                    resolveTeamLogoUrl(
+                                                        match.team_a?.logo,
+                                                    )
+                                                "
+                                                :src="
+                                                    resolveTeamLogoUrl(
+                                                        match.team_a?.logo,
+                                                    )
+                                                "
+                                                :alt="
+                                                    (match.team_a?.name ||
+                                                        'Team A') + ' logo'
+                                                "
+                                                class="team-avatar-image"
+                                                loading="lazy"
+                                            />
+                                            <span
+                                                v-else
+                                                class="team-avatar-fallback"
+                                            >
+                                                {{
+                                                    match.team_a?.name?.charAt(
+                                                        0,
+                                                    ) || "A"
+                                                }}
+                                            </span>
+                                        </div>
+                                        <div class="team-info">
+                                            <span class="team-name">{{
+                                                match.team_a?.name
+                                            }}</span>
+                                            <span
+                                                v-if="
+                                                    match.status === 'finished'
+                                                "
+                                                class="team-score"
+                                                >{{ match.team_a_score }}</span
+                                            >
+                                        </div>
+                                    </div>
+
+                                    <div class="vs-section">
+                                        <span class="vs-badge">VS</span>
+                                    </div>
+
+                                    <div class="team team-right">
+                                        <div
+                                            class="team-avatar team-avatar-alt"
+                                        >
+                                            <img
+                                                v-if="
+                                                    resolveTeamLogoUrl(
+                                                        match.team_b?.logo,
+                                                    )
+                                                "
+                                                :src="
+                                                    resolveTeamLogoUrl(
+                                                        match.team_b?.logo,
+                                                    )
+                                                "
+                                                :alt="
+                                                    (match.team_b?.name ||
+                                                        'Team B') + ' logo'
+                                                "
+                                                class="team-avatar-image"
+                                                loading="lazy"
+                                            />
+                                            <span
+                                                v-else
+                                                class="team-avatar-fallback"
+                                            >
+                                                {{
+                                                    match.team_b?.name?.charAt(
+                                                        0,
+                                                    ) || "B"
+                                                }}
+                                            </span>
+                                        </div>
+                                        <div class="team-info">
+                                            <span class="team-name">{{
+                                                match.team_b?.name
+                                            }}</span>
+                                            <span
+                                                v-if="
+                                                    match.status === 'finished'
+                                                "
+                                                class="team-score"
+                                                >{{ match.team_b_score }}</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="match-details">
+                                    <div class="detail-item">
+                                        <svg
+                                            class="detail-icon"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                            ></path>
+                                        </svg>
+                                        {{ formatDate(match.match_date) }}
+                                    </div>
+                                    <div
+                                        v-if="match.match_time"
+                                        class="detail-item"
+                                    >
+                                        <svg
+                                            class="detail-icon"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                            ></path>
+                                        </svg>
+                                        {{ formatTime(match.match_time) }}
+                                    </div>
+                                    <div v-if="match.venue" class="detail-item">
+                                        <svg
+                                            class="detail-icon"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                            ></path>
+                                        </svg>
+                                        {{ match.venue }}
+                                    </div>
+                                    <span
+                                        :class="[
+                                            'status-badge',
+                                            'status-' + match.status,
+                                        ]"
+                                    >
+                                        {{ match.status.toUpperCase() }}
+                                    </span>
+                                    <span class="view-details">
+                                        View Details
+                                        <svg
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M9 5l7 7-7 7"
+                                            ></path>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                        </Link>
+                    </div>
+                </section>
             </div>
 
             <div v-else class="empty-state">
@@ -194,13 +228,70 @@
 <script setup>
 import { Head, Link } from "@inertiajs/vue3";
 import PublicLayout from "@/Layouts/PublicLayout.vue";
+import { computed } from "vue";
 
-defineProps({
+const props = defineProps({
     matches: Array,
     embedded: {
         type: Boolean,
         default: false,
     },
+});
+
+const statusGroupOrder = ["upcoming", "ongoing", "finished"];
+
+const statusGroupLabels = {
+    upcoming: "Upcoming",
+    ongoing: "Ongoing",
+    finished: "Finished",
+};
+
+const normalizeStatusGroup = (status) => {
+    const normalized = String(status || "").toLowerCase();
+
+    if (normalized === "upcoming") return "upcoming";
+    if (["live", "ongoing", "paused"].includes(normalized)) return "ongoing";
+    if (normalized === "finished") return "finished";
+
+    return "upcoming";
+};
+
+const toMatchTimestamp = (match) => {
+    const datePart = String(match?.match_date ?? "").slice(0, 10);
+    if (!datePart) return Number.MAX_SAFE_INTEGER;
+
+    const timeRaw = String(match?.match_time ?? "").trim();
+    const timePart = timeRaw ? timeRaw.slice(0, 8) : "00:00:00";
+
+    const parsed = new Date(`${datePart}T${timePart}`);
+    if (Number.isNaN(parsed.getTime())) return Number.MAX_SAFE_INTEGER;
+
+    return parsed.getTime();
+};
+
+const groupedSections = computed(() => {
+    const groups = {
+        upcoming: [],
+        ongoing: [],
+        finished: [],
+    };
+
+    (props.matches ?? []).forEach((match) => {
+        const key = normalizeStatusGroup(match?.status);
+        groups[key].push(match);
+    });
+
+    groups.upcoming.sort((a, b) => toMatchTimestamp(a) - toMatchTimestamp(b));
+    groups.ongoing.sort((a, b) => toMatchTimestamp(a) - toMatchTimestamp(b));
+    groups.finished.sort((a, b) => toMatchTimestamp(b) - toMatchTimestamp(a));
+
+    return statusGroupOrder
+        .map((key) => ({
+            key,
+            title: statusGroupLabels[key],
+            matches: groups[key],
+        }))
+        .filter((group) => group.matches.length > 0);
 });
 
 const resolveTeamLogoUrl = (logoPath) => {
@@ -303,9 +394,56 @@ const formatTime = (time) => {
     margin: 0;
 }
 
+.schedule-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.schedule-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0 0.25rem;
+}
+
+.section-title {
+    margin: 0;
+    color: var(--cv-text-1);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.section-count {
+    min-width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: rgba(251, 191, 36, 0.95);
+    background: rgba(245, 158, 11, 0.16);
+    border: 1px solid rgba(245, 158, 11, 0.34);
+}
+
 @media (min-width: 480px) {
     .page-title {
         font-size: 1.75rem;
+    }
+
+    .section-title {
+        font-size: 1.05rem;
     }
 }
 
@@ -568,23 +706,28 @@ const formatTime = (time) => {
 }
 
 .status-upcoming {
-    background: rgba(251, 191, 36, 0.15);
-    color: rgba(251, 191, 36, 0.95);
+    background: #b45309;
+    color: #ffffff;
 }
 
 .status-ongoing {
-    background: rgba(239, 68, 68, 0.15);
-    color: rgba(254, 202, 202, 0.95);
+    background: #dc2626;
+    color: #ffffff;
+}
+
+.status-live {
+    background: #dc2626;
+    color: #ffffff;
 }
 
 .status-paused {
-    background: rgba(251, 191, 36, 0.2);
-    color: #fbbf24;
+    background: #c2410c;
+    color: #ffffff;
 }
 
 .status-finished {
-    background: rgba(100, 116, 139, 0.2);
-    color: #94a3b8;
+    background: #475569;
+    color: #ffffff;
 }
 
 .empty-state {

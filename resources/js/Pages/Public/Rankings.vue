@@ -1,5 +1,5 @@
 <template>
-    <Head v-if="!embedded" title="Rankings | SBA" />
+    <Head v-if="!embedded" title="Team Rankings | SBA" />
     <component :is="embedded ? 'div' : PublicLayout">
         <div class="rankings-page">
             <div class="page-header">
@@ -13,7 +13,7 @@
                         ></path>
                     </svg>
                 </div>
-                <h1 class="page-title">Team Rankings</h1>
+                <h1 class="page-title">TEAM RANKINGS</h1>
             </div>
 
             <!-- Division Tabs -->
@@ -36,33 +36,157 @@
                 </button>
             </div>
 
-            <div v-if="filteredTeams.length > 0" class="rankings-table-wrapper">
+            <section
+                v-if="topTeam"
+                class="featured-top-card"
+                aria-label="Top team"
+            >
+                <div class="featured-head">
+                    <span class="featured-pill">TOP 1</span>
+                    <span class="featured-rank">
+                        Rank #{{ resolveRank(topTeam, 1) }}
+                    </span>
+                </div>
+
+                <div class="featured-main">
+                    <div class="featured-team">
+                        <img
+                            v-if="resolveTeamLogoUrl(topTeam.logo)"
+                            :src="resolveTeamLogoUrl(topTeam.logo)"
+                            :alt="topTeam.name + ' logo'"
+                            class="featured-logo"
+                            loading="lazy"
+                        />
+                        <div
+                            v-else
+                            class="featured-logo-fallback"
+                            aria-hidden="true"
+                        >
+                            {{ topTeam.name?.charAt(0) || "T" }}
+                        </div>
+
+                        <div class="featured-team-meta">
+                            <h2 class="featured-team-name">
+                                {{ topTeam.name }}
+                            </h2>
+                            <p class="featured-team-sub">
+                                {{ topTeam.division?.name || "All Divisions" }}
+                                <span class="featured-dot">•</span>
+                                {{ topTeam.wins }}-{{ topTeam.losses }} record
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="featured-stats" aria-label="Top team stats">
+                        <div class="featured-stat">
+                            <span class="featured-stat-k">Points</span>
+                            <span class="featured-stat-v">{{
+                                topTeam.points
+                            }}</span>
+                        </div>
+                        <div class="featured-stat">
+                            <span class="featured-stat-k">Wins</span>
+                            <span class="featured-stat-v win">{{
+                                topTeam.wins
+                            }}</span>
+                        </div>
+                        <div class="featured-stat">
+                            <span class="featured-stat-k">Losses</span>
+                            <span class="featured-stat-v loss">{{
+                                topTeam.losses
+                            }}</span>
+                        </div>
+                        <div class="featured-stat">
+                            <span class="featured-stat-k">Win %</span>
+                            <span class="featured-stat-v">
+                                {{ topTeam.win_percentage }}%
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div
+                v-if="remainingTeams.length > 0"
+                class="rankings-table-wrapper"
+            >
                 <table class="rankings-table">
                     <thead>
                         <tr>
-                            <th>Rank</th>
-                            <th>Team Name</th>
-                            <th>Wins</th>
-                            <th>Losses</th>
-                            <th>Points</th>
-                            <th>Win %</th>
+                            <th>
+                                <span class="th-label th-label-full">Rank</span>
+                                <span class="th-label th-label-short">#</span>
+                            </th>
+                            <th>
+                                <span class="th-label th-label-full"
+                                    >Team Name</span
+                                >
+                                <span class="th-label th-label-short"
+                                    >Team</span
+                                >
+                            </th>
+                            <th>
+                                <span class="th-label th-label-full">Wins</span>
+                                <span class="th-label th-label-short">W</span>
+                            </th>
+                            <th>
+                                <span class="th-label th-label-full"
+                                    >Losses</span
+                                >
+                                <span class="th-label th-label-short">L</span>
+                            </th>
+                            <th>
+                                <span class="th-label th-label-full"
+                                    >Points</span
+                                >
+                                <span class="th-label th-label-short">PTS</span>
+                            </th>
+                            <th>
+                                <span class="th-label th-label-full"
+                                    >Win %</span
+                                >
+                                <span class="th-label th-label-short"
+                                    >WIN%</span
+                                >
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr
-                            v-for="(team, index) in filteredTeams"
+                            v-for="(team, index) in remainingTeams"
                             :key="team.id"
-                            :class="{ 'top-three': index < 3 }"
+                            :class="{
+                                'top-three': resolveRank(team, index + 2) <= 3,
+                            }"
                         >
                             <td>
                                 <span
                                     class="rank-badge"
-                                    :class="'rank-' + (index + 1)"
+                                    :class="
+                                        'rank-' + resolveRank(team, index + 2)
+                                    "
                                 >
-                                    <span v-if="index === 0">🥇</span>
-                                    <span v-else-if="index === 1">🥈</span>
-                                    <span v-else-if="index === 2">🥉</span>
-                                    <span v-else>{{ index + 1 }}</span>
+                                    <span
+                                        v-if="
+                                            resolveRank(team, index + 2) === 1
+                                        "
+                                        >🥇</span
+                                    >
+                                    <span
+                                        v-else-if="
+                                            resolveRank(team, index + 2) === 2
+                                        "
+                                        >🥈</span
+                                    >
+                                    <span
+                                        v-else-if="
+                                            resolveRank(team, index + 2) === 3
+                                        "
+                                        >🥉</span
+                                    >
+                                    <span v-else>
+                                        {{ resolveRank(team, index + 2) }}
+                                    </span>
                                 </span>
                             </td>
                             <td class="team-name-cell">
@@ -97,63 +221,6 @@
                 </table>
             </div>
 
-            <div v-if="filteredTeams.length > 0" class="rankings-cards">
-                <div
-                    v-for="(team, index) in filteredTeams"
-                    :key="`card-${team.id}`"
-                    class="ranking-card"
-                    :class="{ 'top-three-card': index < 3 }"
-                >
-                    <div class="ranking-card-header">
-                        <span class="rank-badge" :class="'rank-' + (index + 1)">
-                            <span v-if="index === 0">🥇</span>
-                            <span v-else-if="index === 1">🥈</span>
-                            <span v-else-if="index === 2">🥉</span>
-                            <span v-else>{{ index + 1 }}</span>
-                        </span>
-
-                        <div class="team-name">
-                            <img
-                                v-if="resolveTeamLogoUrl(team.logo)"
-                                :src="resolveTeamLogoUrl(team.logo)"
-                                :alt="team.name + ' logo'"
-                                class="team-logo"
-                                loading="lazy"
-                            />
-                            <div
-                                v-else
-                                class="team-logo-fallback"
-                                aria-hidden="true"
-                            >
-                                {{ team.name?.charAt(0) || "T" }}
-                            </div>
-                            <span class="team-name-text">{{ team.name }}</span>
-                        </div>
-                    </div>
-
-                    <div class="ranking-card-stats">
-                        <div class="stat-item">
-                            <span class="stat-label">Wins</span>
-                            <span class="wins-cell">{{ team.wins }}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Losses</span>
-                            <span class="losses-cell">{{ team.losses }}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Points</span>
-                            <span class="points-cell">{{ team.points }}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Win %</span>
-                            <span class="percentage-cell"
-                                >{{ team.win_percentage }}%</span
-                            >
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div v-else class="empty-state">
                 <div class="empty-icon">🏆</div>
                 <p>
@@ -184,13 +251,23 @@ const props = defineProps({
 const selectedDivision = ref(null);
 
 const filteredTeams = computed(() => {
+    const teams = Array.isArray(props.teams) ? props.teams : [];
+
     if (selectedDivision.value === null) {
-        return props.teams;
+        return teams;
     }
-    return props.teams.filter(
-        (team) => team.division_id === selectedDivision.value,
-    );
+    return teams.filter((team) => team.division_id === selectedDivision.value);
 });
+
+const topTeam = computed(() => filteredTeams.value[0] ?? null);
+
+const remainingTeams = computed(() => filteredTeams.value.slice(1));
+
+const resolveRank = (team, fallbackRank) => {
+    const rank = Number(team?.rank);
+    if (Number.isFinite(rank) && rank > 0) return rank;
+    return fallbackRank;
+};
 
 const resolveTeamLogoUrl = (logoPath) => {
     if (!logoPath || typeof logoPath !== "string") return null;
@@ -213,10 +290,7 @@ const resolveTeamLogoUrl = (logoPath) => {
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 1.5rem;
-    background: var(--cv-surface-1);
-    border-radius: 0.75rem;
-    border: 1px solid var(--cv-border-1);
+    padding: 0;
 }
 
 .header-icon {
@@ -242,10 +316,7 @@ const resolveTeamLogoUrl = (logoPath) => {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
-    padding: 1rem;
-    background: var(--cv-surface-1);
-    border-radius: 0.75rem;
-    border: 1px solid var(--cv-border-1);
+    padding: 0;
 }
 
 .division-tab {
@@ -271,16 +342,160 @@ const resolveTeamLogoUrl = (logoPath) => {
     color: #ffffff;
 }
 
+.featured-top-card {
+    border-radius: 1rem;
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    background:
+        linear-gradient(
+            135deg,
+            rgba(251, 191, 36, 0.16) 0%,
+            rgba(245, 158, 11, 0.1) 55%,
+            rgba(2, 6, 23, 0.2) 100%
+        ),
+        var(--cv-surface-1);
+    padding: 1rem;
+}
+
+.featured-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.9rem;
+}
+
+.featured-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0.32rem 0.65rem;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: #78350f;
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+}
+
+.featured-rank {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--cv-text-2);
+}
+
+.featured-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.featured-team {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-width: 0;
+}
+
+.featured-logo,
+.featured-logo-fallback {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 1rem;
+    flex-shrink: 0;
+}
+
+.featured-logo {
+    object-fit: cover;
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    background: var(--cv-surface-3);
+}
+
+.featured-logo-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #78350f;
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+}
+
+.featured-team-meta {
+    min-width: 0;
+}
+
+.featured-team-name {
+    margin: 0;
+    font-size: 1.35rem;
+    line-height: 1.15;
+    color: var(--cv-text-1);
+}
+
+.featured-team-sub {
+    margin: 0.32rem 0 0;
+    color: var(--cv-text-2);
+    font-size: 0.9rem;
+}
+
+.featured-dot {
+    margin: 0 0.35rem;
+    color: var(--cv-muted);
+}
+
+.featured-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(6rem, 1fr));
+    gap: 0.55rem;
+    width: 100%;
+    max-width: 34rem;
+}
+
+.featured-stat {
+    border-radius: 0.75rem;
+    border: 1px solid var(--cv-border-1);
+    background: rgba(0, 0, 0, 0.22);
+    padding: 0.55rem 0.65rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.18rem;
+}
+
+.featured-stat-k {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cv-muted);
+}
+
+.featured-stat-v {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--cv-text-1);
+}
+
+.featured-stat-v.win {
+    color: #4ade80;
+}
+
+.featured-stat-v.loss {
+    color: #f87171;
+}
+
 .rankings-table-wrapper {
     background: var(--cv-surface-1);
     border-radius: 0.75rem;
     border: 1px solid var(--cv-border-1);
-    overflow: hidden;
+    overflow-x: auto;
 }
 
 .rankings-table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 640px;
 }
 
 .rankings-table thead {
@@ -295,6 +510,10 @@ const resolveTeamLogoUrl = (logoPath) => {
     color: var(--cv-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+}
+
+.th-label-short {
+    display: none;
 }
 
 .rankings-table tbody tr {
@@ -422,18 +641,10 @@ const resolveTeamLogoUrl = (logoPath) => {
     margin: 0;
 }
 
-.rankings-cards {
-    display: none;
-    gap: 1rem;
-}
-
 @media (max-width: 768px) {
-    .rankings-table-wrapper {
-        display: none;
-    }
-
-    .rankings-cards {
-        display: grid;
+    .rankings-table th,
+    .rankings-table td {
+        padding: 0.75rem;
     }
 }
 
@@ -441,6 +652,48 @@ const resolveTeamLogoUrl = (logoPath) => {
     .page-header {
         padding: 1rem;
         gap: 0.75rem;
+    }
+
+    .rankings-table-wrapper {
+        overflow-x: hidden;
+    }
+
+    .rankings-table {
+        min-width: 0;
+        table-layout: fixed;
+    }
+
+    .rankings-table th,
+    .rankings-table td {
+        padding: 0.52rem 0.3rem;
+        font-size: 0.68rem;
+        letter-spacing: 0.02em;
+        line-height: 1.2;
+    }
+
+    .th-label-full {
+        display: none;
+    }
+
+    .th-label-short {
+        display: inline;
+    }
+
+    .rankings-table th:nth-child(1),
+    .rankings-table td:nth-child(1) {
+        width: 2.3rem;
+        text-align: center;
+    }
+
+    .rankings-table th:nth-child(2),
+    .rankings-table td:nth-child(2) {
+        width: 40%;
+    }
+
+    .rankings-table th:nth-child(n + 3),
+    .rankings-table td:nth-child(n + 3) {
+        width: 12%;
+        text-align: center;
     }
 
     .header-icon svg {
@@ -453,7 +706,6 @@ const resolveTeamLogoUrl = (logoPath) => {
     }
 
     .division-tabs {
-        padding: 0.75rem;
         gap: 0.375rem;
     }
 
@@ -462,52 +714,99 @@ const resolveTeamLogoUrl = (logoPath) => {
         font-size: 0.8125rem;
     }
 
-    .ranking-card-stats {
-        grid-template-columns: 1fr;
+    .team-name {
+        gap: 0.35rem;
+    }
+
+    .team-logo,
+    .team-logo-fallback {
+        width: 1.4rem;
+        height: 1.4rem;
+        border-radius: 0.35rem;
+    }
+
+    .team-name-cell {
+        font-size: 0.74rem;
+    }
+
+    .team-name-text {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .rank-badge {
+        width: 1.55rem;
+        height: 1.55rem;
+        border-radius: 0.42rem;
+        font-size: 0.72rem;
+    }
+
+    .points-cell {
+        font-size: 0.78rem;
+    }
+
+    .wins-cell,
+    .losses-cell,
+    .percentage-cell {
+        font-size: 0.72rem;
+    }
+
+    .featured-top-card {
+        padding: 0.85rem;
+    }
+
+    .featured-head {
+        margin-bottom: 0.75rem;
+    }
+
+    .featured-logo,
+    .featured-logo-fallback {
+        width: 3.2rem;
+        height: 3.2rem;
+        border-radius: 0.85rem;
+    }
+
+    .featured-team-name {
+        font-size: 1.08rem;
+    }
+
+    .featured-team-sub {
+        font-size: 0.82rem;
+    }
+
+    .featured-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        max-width: none;
     }
 }
 
-.ranking-card {
-    background: var(--cv-surface-1);
-    border-radius: 0.75rem;
-    border: 1px solid var(--cv-border-1);
-    padding: 1rem;
-}
+@media (max-width: 420px) {
+    .rankings-table th,
+    .rankings-table td {
+        padding: 0.42rem 0.22rem;
+        font-size: 0.62rem;
+    }
 
-.ranking-card.top-three-card {
-    background: rgba(251, 191, 36, 0.05);
-}
+    .rank-badge {
+        width: 1.35rem;
+        height: 1.35rem;
+        font-size: 0.64rem;
+    }
 
-.ranking-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-}
+    .team-logo,
+    .team-logo-fallback {
+        width: 1.2rem;
+        height: 1.2rem;
+    }
 
-.ranking-card-stats {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
-}
+    .team-name-cell {
+        font-size: 0.68rem;
+    }
 
-.stat-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding: 0.75rem;
-    border-radius: 0.75rem;
-    background: var(--cv-surface-3);
-    border: 1px solid var(--cv-border-1);
-}
-
-.stat-item .stat-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--cv-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    .points-cell {
+        font-size: 0.72rem;
+    }
 }
 </style>

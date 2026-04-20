@@ -2,6 +2,15 @@
     <Head :title="`${player?.name || 'Player'} | Player Stats | SBA`" />
     <PublicLayout>
         <div class="player-stats-page">
+            <div class="page-actions">
+                <Link
+                    :href="route('home', { section: 'individual-stats' })"
+                    class="back-link"
+                >
+                    ← Back to Individual Player Statistics
+                </Link>
+            </div>
+
             <div class="page-header">
                 <div class="header-icon">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -20,6 +29,10 @@
                         <span v-if="player?.division"
                             >• {{ player.division }}</span
                         >
+                    </p>
+                    <p class="page-description">
+                        Per-game breakdown and season-high output from recorded
+                        completed games.
                     </p>
                 </div>
             </div>
@@ -47,6 +60,9 @@
                             </div>
                         </div>
                         <div class="profile-name">{{ player?.name }}</div>
+                        <p class="profile-caption">
+                            Individual performance snapshot
+                        </p>
                     </div>
 
                     <div class="profile-right">
@@ -99,6 +115,19 @@
                                 </text>
                             </svg>
                         </div>
+                        <div class="radar-legend" aria-label="Radar labels">
+                            <span
+                                v-for="label in radarAxisLabelsLong"
+                                :key="label"
+                                class="radar-legend-item"
+                            >
+                                {{ label }}
+                            </span>
+                        </div>
+                        <p class="radar-note">
+                            This chart compares this player's stats with the
+                            league's best in each category.
+                        </p>
                     </div>
                 </div>
 
@@ -178,7 +207,7 @@
 </template>
 
 <script setup>
-import { Head } from "@inertiajs/vue3";
+import { Head, Link } from "@inertiajs/vue3";
 import { computed } from "vue";
 import PublicLayout from "@/Layouts/PublicLayout.vue";
 
@@ -196,6 +225,13 @@ const radarKeys = [
 ];
 
 const radarAxisLabels = ["PTS", "AST", "REB", "STL", "BLK"];
+const radarAxisLabelsLong = [
+    "Points",
+    "Assists",
+    "Rebounds",
+    "Steals",
+    "Blocks",
+];
 
 const maxes = computed(() => props.radarMaxes || {});
 
@@ -349,14 +385,39 @@ const resolvePlayerPhotoUrl = (photoPath) => {
     gap: 1.5rem;
 }
 
+.page-actions {
+    display: flex;
+    align-items: center;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--cv-text-2);
+    text-decoration: none;
+    border: 1px solid var(--cv-border-1);
+    border-radius: 999px;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    transition:
+        color 120ms ease,
+        border-color 120ms ease,
+        background 120ms ease;
+}
+
+.back-link:hover {
+    color: var(--cv-text-1);
+    border-color: rgba(251, 191, 36, 0.42);
+    background: var(--cv-surface-2);
+}
+
 .page-header {
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 1.5rem;
-    background: var(--cv-surface-1);
-    border-radius: 0.75rem;
-    border: 1px solid var(--cv-border-1);
+    padding: 0;
 }
 
 .header-icon {
@@ -393,11 +454,18 @@ const resolvePlayerPhotoUrl = (photoPath) => {
     font-size: 0.95rem;
 }
 
+.page-description {
+    margin: 0;
+    color: var(--cv-muted-2);
+    font-size: 0.82rem;
+    line-height: 1.35;
+}
+
 .player-profile {
-    padding: 1rem;
-    background: var(--cv-surface-1);
-    border: 1px solid var(--cv-border-1);
-    border-radius: 0.75rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -441,8 +509,17 @@ const resolvePlayerPhotoUrl = (photoPath) => {
     color: var(--cv-text-1);
 }
 
+.profile-caption {
+    margin: 0.25rem 0 0;
+    text-align: center;
+    color: var(--cv-muted-2);
+    font-size: 0.78rem;
+}
+
 .profile-right {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
     padding-top: 0.75rem;
 }
@@ -480,6 +557,31 @@ const resolvePlayerPhotoUrl = (photoPath) => {
     fill: var(--cv-muted);
     font-size: 6px;
     font-weight: 700;
+}
+
+.radar-legend {
+    margin-top: 0.55rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.3rem;
+}
+
+.radar-legend-item {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--cv-text-2);
+    border: 1px solid var(--cv-border-1);
+    border-radius: 999px;
+    padding: 0.15rem 0.45rem;
+    background: var(--cv-surface-3);
+}
+
+.radar-note {
+    margin: 0.45rem 0 0;
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--cv-muted-2);
 }
 
 .profile-meta {
@@ -570,7 +672,7 @@ const resolvePlayerPhotoUrl = (photoPath) => {
 
 @media (max-width: 768px) {
     .page-header {
-        padding: 1rem;
+        padding: 0;
         gap: 0.75rem;
     }
 
@@ -587,8 +689,12 @@ const resolvePlayerPhotoUrl = (photoPath) => {
         font-size: 0.875rem;
     }
 
+    .page-description {
+        font-size: 0.76rem;
+    }
+
     .player-profile {
-        padding: 0.875rem;
+        padding: 0;
     }
 
     .profile-top {
@@ -605,6 +711,10 @@ const resolvePlayerPhotoUrl = (photoPath) => {
         font-size: 0.95rem;
     }
 
+    .profile-caption {
+        font-size: 0.72rem;
+    }
+
     .profile-right {
         justify-content: center;
         padding-top: 0;
@@ -612,6 +722,15 @@ const resolvePlayerPhotoUrl = (photoPath) => {
 
     .radar-wrapper {
         width: 160px;
+    }
+
+    .radar-legend-item {
+        font-size: 0.58rem;
+        padding: 0.12rem 0.38rem;
+    }
+
+    .radar-note {
+        font-size: 0.66rem;
     }
 
     .profile-meta {
@@ -652,6 +771,10 @@ const resolvePlayerPhotoUrl = (photoPath) => {
 
     .page-subtitle {
         font-size: 0.8rem;
+    }
+
+    .page-description {
+        font-size: 0.72rem;
     }
 
     .stat-item {

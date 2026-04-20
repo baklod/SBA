@@ -28,40 +28,107 @@
                     >
                         Schedule
                     </Link>
-                    <Link
-                        :href="route('home', { section: 'rankings' })"
-                        class="nav-link"
-                        :class="{ active: isActiveSection('rankings') }"
+                    <div
+                        class="nav-dropdown"
+                        :class="{ active: isRankingsSectionActive }"
                     >
-                        Rankings
-                    </Link>
-                    <Link
-                        :href="route('home', { section: 'team-stats' })"
-                        class="nav-link"
-                        :class="{ active: isActiveSection('team-stats') }"
+                        <button type="button" class="nav-dropdown-trigger">
+                            Rankings
+                            <svg
+                                class="nav-dropdown-icon"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M19 9l-7 7-7-7"
+                                />
+                            </svg>
+                        </button>
+                        <div class="nav-dropdown-menu">
+                            <Link
+                                :href="route('home', { section: 'rankings' })"
+                                class="nav-dropdown-item"
+                                :class="{ active: isActiveSection('rankings') }"
+                            >
+                                Team Rankings
+                            </Link>
+                            <Link
+                                :href="
+                                    route('home', { section: 'highest-points' })
+                                "
+                                class="nav-dropdown-item"
+                                :class="{
+                                    active: isActiveSection('highest-points'),
+                                }"
+                            >
+                                Player Rankings
+                            </Link>
+                        </div>
+                    </div>
+                    <div
+                        class="nav-dropdown"
+                        :class="{ active: isStatsSectionActive }"
                     >
-                        Team Stats
-                    </Link>
-                    <Link
-                        :href="route('home', { section: 'individual-stats' })"
-                        class="nav-link"
-                        :class="{ active: isActiveSection('individual-stats') }"
-                    >
-                        Player Stats
-                    </Link>
-                    <Link
-                        :href="route('home', { section: 'highest-points' })"
-                        class="nav-link"
-                        :class="{ active: isActiveSection('highest-points') }"
-                    >
-                        Top Scorers
-                    </Link>
+                        <button type="button" class="nav-dropdown-trigger">
+                            Stats
+                            <svg
+                                class="nav-dropdown-icon"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M19 9l-7 7-7-7"
+                                />
+                            </svg>
+                        </button>
+                        <div class="nav-dropdown-menu">
+                            <Link
+                                :href="route('home', { section: 'team-stats' })"
+                                class="nav-dropdown-item"
+                                :class="{
+                                    active: isActiveSection('team-stats'),
+                                }"
+                            >
+                                Team Stats
+                            </Link>
+                            <Link
+                                :href="
+                                    route('home', {
+                                        section: 'individual-stats',
+                                    })
+                                "
+                                class="nav-dropdown-item"
+                                :class="{
+                                    active: isActiveSection('individual-stats'),
+                                }"
+                            >
+                                Player Stats
+                            </Link>
+                        </div>
+                    </div>
                     <Link
                         :href="route('home', { section: 'standings' })"
                         class="nav-link"
                         :class="{ active: isActiveSection('standings') }"
                     >
                         Standings
+                    </Link>
+                    <Link
+                        :href="route('events')"
+                        class="nav-link"
+                        :class="{ active: route().current('events') }"
+                    >
+                        Events
                     </Link>
                     <Link
                         :href="route('announcements')"
@@ -243,35 +310,67 @@
                     :class="{ active: isActiveSection('schedule') }"
                     >Schedule</Link
                 >
-                <Link
-                    :href="route('home', { section: 'rankings' })"
-                    class="mobile-link"
-                    :class="{ active: isActiveSection('rankings') }"
-                    >Rankings</Link
-                >
-                <Link
-                    :href="route('home', { section: 'team-stats' })"
-                    class="mobile-link"
-                    :class="{ active: isActiveSection('team-stats') }"
-                    >Team Stats</Link
-                >
-                <Link
-                    :href="route('home', { section: 'individual-stats' })"
-                    class="mobile-link"
-                    :class="{ active: isActiveSection('individual-stats') }"
-                    >Player Stats</Link
-                >
-                <Link
-                    :href="route('home', { section: 'highest-points' })"
-                    class="mobile-link"
-                    :class="{ active: isActiveSection('highest-points') }"
-                    >Top Scorers</Link
-                >
+                <details class="mobile-group" :open="isRankingsSectionActive">
+                    <summary
+                        class="mobile-group-summary"
+                        :class="{ active: isRankingsSectionActive }"
+                    >
+                        Rankings
+                    </summary>
+                    <div class="mobile-group-links">
+                        <Link
+                            :href="route('home', { section: 'rankings' })"
+                            class="mobile-link mobile-sublink"
+                            :class="{ active: isActiveSection('rankings') }"
+                            >Team Rankings</Link
+                        >
+                        <Link
+                            :href="route('home', { section: 'highest-points' })"
+                            class="mobile-link mobile-sublink"
+                            :class="{
+                                active: isActiveSection('highest-points'),
+                            }"
+                            >Player Rankings</Link
+                        >
+                    </div>
+                </details>
+                <details class="mobile-group" :open="isStatsSectionActive">
+                    <summary
+                        class="mobile-group-summary"
+                        :class="{ active: isStatsSectionActive }"
+                    >
+                        Stats
+                    </summary>
+                    <div class="mobile-group-links">
+                        <Link
+                            :href="route('home', { section: 'team-stats' })"
+                            class="mobile-link mobile-sublink"
+                            :class="{ active: isActiveSection('team-stats') }"
+                            >Team Stats</Link
+                        >
+                        <Link
+                            :href="
+                                route('home', { section: 'individual-stats' })
+                            "
+                            class="mobile-link mobile-sublink"
+                            :class="{
+                                active: isActiveSection('individual-stats'),
+                            }"
+                            >Player Stats</Link
+                        >
+                    </div>
+                </details>
                 <Link
                     :href="route('home', { section: 'standings' })"
                     class="mobile-link"
                     :class="{ active: isActiveSection('standings') }"
                     >Standings</Link
+                >
+                <Link
+                    :href="route('events')"
+                    class="mobile-link"
+                    :class="{ active: route().current('events') }"
+                    >Events</Link
                 >
                 <Link
                     :href="route('announcements')"
@@ -405,6 +504,20 @@ const isActiveDashboard = computed(() => {
     return route().current("home") && currentSection.value === "dashboard";
 });
 
+const isStatsSectionActive = computed(() => {
+    return (
+        route().current("home") &&
+        ["team-stats", "individual-stats"].includes(currentSection.value)
+    );
+});
+
+const isRankingsSectionActive = computed(() => {
+    return (
+        route().current("home") &&
+        ["rankings", "highest-points"].includes(currentSection.value)
+    );
+});
+
 const isActiveSection = (section) => {
     return route().current("home") && currentSection.value === section;
 };
@@ -420,8 +533,9 @@ const showFlashMessage = () => {
 
 const isOffSeason = computed(() => Boolean(page.props.isOffSeason));
 const isNewsPage = computed(() => route().current("announcements"));
+const isEventsPage = computed(() => route().current("events"));
 const shouldShowOffSeasonGate = computed(
-    () => isOffSeason.value && !isNewsPage.value,
+    () => isOffSeason.value && !isNewsPage.value && !isEventsPage.value,
 );
 
 onMounted(() => {
@@ -585,6 +699,87 @@ watch(
 }
 
 .nav-link.active {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.12);
+}
+
+.nav-dropdown {
+    position: relative;
+}
+
+.nav-dropdown-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.5rem 0.875rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--cv-muted);
+    border: none;
+    border-radius: 0.5rem;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-dropdown-icon {
+    width: 0.85rem;
+    height: 0.85rem;
+}
+
+.nav-dropdown:hover .nav-dropdown-trigger,
+.nav-dropdown:focus-within .nav-dropdown-trigger,
+.nav-dropdown.active .nav-dropdown-trigger {
+    color: var(--cv-text-1);
+    background: var(--cv-surface-1);
+}
+
+.nav-dropdown.active .nav-dropdown-trigger {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.12);
+}
+
+.nav-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 0.35rem);
+    left: 0;
+    min-width: 12rem;
+    padding: 0.35rem;
+    border-radius: 0.65rem;
+    border: 1px solid var(--cv-border-1);
+    background: var(--cv-nav-bg-mobile);
+    backdrop-filter: blur(10px);
+    display: none;
+    flex-direction: column;
+    gap: 0.2rem;
+    z-index: 20;
+}
+
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown:focus-within .nav-dropdown-menu {
+    display: flex;
+}
+
+.nav-dropdown-item {
+    text-decoration: none;
+    color: var(--cv-muted);
+    border-radius: 0.45rem;
+    padding: 0.5rem 0.625rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: all 0.2s ease;
+}
+
+.nav-dropdown-item:hover {
+    color: var(--cv-text-1);
+    background: var(--cv-surface-1);
+}
+
+.nav-dropdown-item.active {
     color: #fbbf24;
     background: rgba(251, 191, 36, 0.12);
 }
@@ -775,9 +970,17 @@ watch(
 .mobile-menu {
     display: flex;
     flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 110;
     padding: 1rem;
     border-top: 1px solid var(--cv-border-1);
-    background: var(--cv-nav-bg-mobile);
+    background: var(--cv-bg-top);
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
 }
 
 @media (min-width: 1024px) {
@@ -805,6 +1008,49 @@ watch(
 
 .mobile-link.active {
     color: #fbbf24;
+}
+
+.mobile-group {
+    margin: 0.2rem 0;
+}
+
+.mobile-group-summary {
+    list-style: none;
+    padding: 0.75rem 1rem;
+    color: var(--cv-muted);
+    border-radius: 0.5rem;
+    font-size: 0.9375rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mobile-group-summary::-webkit-details-marker {
+    display: none;
+}
+
+.mobile-group-summary:hover,
+.mobile-group-summary.active {
+    color: var(--cv-text-1);
+    background: var(--cv-surface-1);
+}
+
+.mobile-group-summary.active {
+    color: #fbbf24;
+}
+
+.mobile-group-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0 0.25rem 0.25rem 0.75rem;
+}
+
+.mobile-sublink {
+    font-size: 0.84rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
 }
 
 .mobile-divider {

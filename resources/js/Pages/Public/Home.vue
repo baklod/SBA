@@ -145,13 +145,13 @@ const headTitle = computed(() => {
         case "schedule":
             return "Schedule | SBA";
         case "rankings":
-            return "Rankings | SBA";
+            return "Team Rankings | SBA";
         case "team-stats":
             return "Team Stats | SBA";
         case "individual-stats":
             return "Player Stats | SBA";
         case "highest-points":
-            return "Top Scorers | SBA";
+            return "Player Rankings | SBA";
         case "standings":
             return "Standings | SBA";
         default:

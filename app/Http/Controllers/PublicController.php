@@ -9,6 +9,7 @@ use App\Models\Player;
 use App\Models\PlayerStat;
 use App\Models\PlayoffSlot;
 use App\Models\Announcement;
+use App\Models\Event;
 use App\Models\TeamRegistrationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -165,6 +166,22 @@ class PublicController extends Controller
     public function highestPoints()
     {
         return redirect()->route('home', ['section' => 'highest-points']);
+    }
+
+    /**
+     * Display events
+     */
+    public function events()
+    {
+        $events = Event::with('author')
+            ->where('is_published', true)
+            ->orderBy('event_date', 'asc')
+            ->orderBy('event_time', 'asc')
+            ->get();
+
+        return Inertia::render('Public/Events', [
+            'events' => $events,
+        ]);
     }
 
     /**
@@ -456,6 +473,23 @@ class PublicController extends Controller
                 ->get()
                 ->map(function ($player) {
                     $playedStats = $player->stats->where('played', true);
+                    $gamesPlayed = $playedStats->unique('match_id')->count();
+
+                    $totalPoints = (int) $playedStats->sum('points');
+                    $totalAssists = (int) $playedStats->sum('assists');
+                    $totalRebounds = (int) $playedStats->sum('rebounds');
+                    $totalSteals = (int) $playedStats->sum('steals');
+                    $totalBlocks = (int) $playedStats->sum('blocks');
+
+                    // Weighted ranking using overall totals only.
+                    $rankingScore = round(
+                        ($totalAssists * 0.35) +
+                        ($totalPoints * 0.25) +
+                        ($totalRebounds * 0.20) +
+                        ($totalSteals * 0.12) +
+                        ($totalBlocks * 0.08),
+                        2
+                    );
 
                     return [
                         'id' => $player->id,
@@ -466,11 +500,28 @@ class PublicController extends Controller
                         'division_id' => $player->team->division_id,
                         'jersey_number' => $player->jersey_number,
                         'highest_points' => $playedStats->max('points') ?? 0,
-                        'total_points' => $playedStats->sum('points'),
-                        'games_played' => $playedStats->unique('match_id')->count(),
+                        'games_played' => $gamesPlayed,
+                        'total_points' => $totalPoints,
+                        'total_assists' => $totalAssists,
+                        'total_rebounds' => $totalRebounds,
+                        'total_steals' => $totalSteals,
+                        'total_blocks' => $totalBlocks,
+                        'ranking_score' => $rankingScore,
                     ];
                 })
-                ->sortByDesc('highest_points')
+                ->sort(function (array $a, array $b) {
+                    return [
+                        $b['ranking_score'],
+                        $b['total_assists'],
+                        $b['total_points'],
+                        $b['total_rebounds'],
+                    ] <=> [
+                        $a['ranking_score'],
+                        $a['total_assists'],
+                        $a['total_points'],
+                        $a['total_rebounds'],
+                    ];
+                })
                 ->values();
         }
 

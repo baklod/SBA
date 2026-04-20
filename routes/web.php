@@ -8,6 +8,7 @@ use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\MatchController;
 use App\Http\Controllers\PlayerStatController;
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PlayoffController;
 use App\Http\Controllers\TeamRegistrationRequestController;
@@ -21,6 +22,7 @@ Route::get('/team-stats', [PublicController::class, 'teamStats'])->name('team-st
 Route::get('/individual-stats', [PublicController::class, 'individualStats'])->name('individual-stats');
 Route::get('/player-stats/{player}', [PublicController::class, 'playerStats'])->name('player-stats');
 Route::get('/highest-points', [PublicController::class, 'highestPoints'])->name('highest-points');
+Route::get('/events', [PublicController::class, 'events'])->name('events');
 Route::get('/announcements', [PublicController::class, 'announcements'])->name('announcements');
 Route::get('/match/{match}', [PublicController::class, 'matchDetails'])->name('match.details');
 Route::get('/standings', [PublicController::class, 'standings'])->name('standings');
@@ -57,6 +59,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     
     // Announcement Management (Admin can manage all)
     Route::resource('announcements', AnnouncementController::class);
+
+    // Event Management (Admin only)
+    Route::resource('events', EventController::class);
     
     // Standings/Playoff Management
     Route::get('/standings', [PlayoffController::class, 'index'])->name('standings.index');
